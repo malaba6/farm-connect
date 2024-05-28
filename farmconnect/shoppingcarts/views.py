@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from .models import ShoppingCarts, CartItem
+from .models import ShoppingCart, CartItem
 from products.models import Product
 from .serializers import ShoppingCartsSerializer, CartItemSerializer
 
@@ -10,7 +10,7 @@ class ShoppingCartsView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get_cart(self, user):
-        cart, created = ShoppingCarts.objects.get_or_create(user=user)
+        cart, created = ShoppingCart.objects.get_or_create(user=user)
         return cart
 
     def get(self, request):

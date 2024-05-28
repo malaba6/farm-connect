@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-# from shopincarts.models import Cart, CartItem
+from shoppingcarts.models import ShoppingCart, CartItem
 
 class Product(models.Model):
     name = models.CharField(max_length=255)
@@ -8,13 +8,13 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.IntegerField()
     images = models.ImageField(upload_to='products/', null=True, blank=True)
-    farmer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='products')
+    farmer = models.IntegerField()
 
     def __str__(self):
         return self.name
 
     def add_to_cart(self, user, quantity=1):
-        cart, created = Cart.objects.get_or_create(user=user)
+        cart, created = ShoppingCart.objects.get_or_create(user=user)
         cart_item, created = CartItem.objects.get_or_create(cart=cart, product=self)
         if not created:
             cart_item.quantity += quantity

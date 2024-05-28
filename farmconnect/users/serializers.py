@@ -7,6 +7,8 @@ User = get_user_model()
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     password2 = serializers.CharField(write_only=True, required=True)
+    is_farmer = serializers.BooleanField(required=False)
+    is_consumer = serializers.BooleanField(required=False)
 
     class Meta:
         model = User
@@ -21,8 +23,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user = User.objects.create(
             username=validated_data['username'],
             email=validated_data['email'],
-            is_farmer=validated_data['is_farmer'],
-            is_consumer=validated_data['is_consumer']
+            is_farmer=validated_data.get('is_farmer', False),
+            is_consumer=validated_data.get('is_consumer', True),
         )
         user.set_password(validated_data['password'])
         user.save()

@@ -4,6 +4,8 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from .models import Product
 from .serializers import ProductSerializer
+from django.db import IntegrityError
+from django.http import Http404
 
 class ProductListCreateView(APIView):
     permission_classes = [IsAuthenticated]
@@ -14,9 +16,9 @@ class ProductListCreateView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
-        serializer = ProductSerializer(data=request.data)
+        serializer = ProductSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
-            product = serializer.save(farmer=request.user)
+            product = serializer.save()
             return Response(ProductSerializer(product).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -36,7 +38,7 @@ class ProductDetailView(APIView):
 
     def put(self, request, pk):
         product = self.get_object(pk)
-        if product.farmer != request.user:
+        if product.farmer != request.user.id:
             return Response({"error": "You are not authorized to edit this product."}, status=status.HTTP_403_FORBIDDEN)
         serializer = ProductSerializer(product, data=request.data)
         if serializer.is_valid():
@@ -46,7 +48,7 @@ class ProductDetailView(APIView):
 
     def delete(self, request, pk):
         product = self.get_object(pk)
-        if product.farmer != request.user:
+        if product.farmer != request.user.id:
             return Response({"error": "You are not authorized to delete this product."}, status=status.HTTP_403_FORBIDDEN)
         product.delete_product()
         return Response(status=status.HTTP_204_NO_CONTENT)

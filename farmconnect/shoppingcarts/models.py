@@ -1,8 +1,8 @@
 from django.db import models
 from django.conf import settings
-from products.models import Product
+# from products.models import Product
 
-class ShoppingCarts(models.Model):
+class ShoppingCart(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='shopping_cart')
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
@@ -31,8 +31,8 @@ class ShoppingCarts(models.Model):
         self.save()
 
 class CartItem(models.Model):
-    shopping_cart = models.ForeignKey(ShoppingCarts, on_delete=models.CASCADE, related_name='items')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    shopping_cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE, related_name='items')
+    product = models.ForeignKey('products.Product', on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
 
     def __str__(self):
